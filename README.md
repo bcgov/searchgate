@@ -7,7 +7,7 @@ Description of the application.
 
 ## Project Status
 
-## Documnentation
+## Documentation
 
 GitHub Pages (https://guides.github.com/features/pages/) are a neat way to document you application/project.
 
@@ -49,7 +49,7 @@ By participating in this project you agree to abide by its terms.
 
 ## License
 
-    Copyright 2016 Province of British Columbia
+    Copyright 2019 Province of British Columbia
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

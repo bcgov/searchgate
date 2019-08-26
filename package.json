@@ -1,0 +1,31 @@
+{
+  "name": "searchgate",
+  "version": "1.0.0",
+  "description": "Description of the application.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "apollo-datasource-rest": "^0.6.1",
+    "apollo-server": "^2.8.2",
+    "dotenv": "^8.1.0",
+    "graphql": "^14.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/searchgate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bcgov/searchgate/issues"
+  },
+  "homepage": "https://github.com/bcgov/searchgate#readme"
+}
