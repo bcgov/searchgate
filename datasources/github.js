@@ -1,69 +1,78 @@
-/* eslint-disable no-underscore-dangle */
-const { RESTDataSource } = require('apollo-datasource-rest');
+const { GraphQLDataSource } = require('apollo-datasource-graphql');
+const { gql } = require('apollo-server-express');
 const _ = require('lodash');
 
-class RocketChatAPI extends RESTDataSource {
-  constructor({ baseURL, authToken, userId }) {
-    super();
+const SEARCH_GITHUB = gql`
+  query {
+    viewer {
+      login
+    }
+  }
+  
+`;
 
-    this.appURL = baseURL;
-    this.baseURL = `${baseURL}/api/v1/`;
+class GithubApi extends GraphQLDataSource {
+  constructor({ baseURL, authToken }) {
+    super();
+    this.baseURL = `${baseURL}`;
     this.authToken = authToken;
-    this.userId = userId;
+    this.type = 'github';
   }
 
   willSendRequest(request) {
-    request.headers.set('X-Auth-Token', this.authToken);
-    request.headers.set('X-User-Id', this.userId);
+    console.log('THE REQUEST', request);
+    if (!request.headers) {
+      request.headers = {};
+    }
+
+    request.headers.authorization = `${this.authToken}`;
   }
 
-  messageSearchResultReducer(message, roomInfo) {
+  /**
+     * assembles a github v4 api search query that specifically searches within an organization
+     * @param {String} query
+     * @param {String} org
+     */
+  static queryWithOrg(query, org) {
+    return `${query} org:${org}`;
+  }
+
+  static githubResultsReducer(repoEdge) {
+    const { watchers, stargazers, ...rest } = repoEdge.node;
     return {
-      id: message._id,
-      message: message.msg,
-      url: `${this.appURL}/channel/${roomInfo.name}?msg=${message._id}`,
-      author: message.u.name,
-      time: message.ts,
-      roomId: roomInfo.id,
-      room: {
-        id: roomInfo.id,
-        name: roomInfo.name,
-      },
+      type: 'github',
+      id: rest.id,
+      typePayload: JSON.stringify({
+        ...rest,
+        numWatchers: watchers.totalCount,
+        numStargazers: stargazers.totalCount,
+      }),
     };
   }
 
-  static roomInfoReducer(room) {
-    return {
-      id: room._id,
-      name: room.name,
-    };
+  async searchReposInOrg({ query, org, first }) {
+    try {
+      const response = await this.query(SEARCH_GITHUB, {
+        variables: {
+          query: GithubApi.queryWithOrg(query, org),
+          first,
+        },
+      });
+      return response.data.search.edges;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
-  async searchRoom({ roomId, searchString }) {
-    const roomInfoResponse = await this.get('rooms.info', { roomId });
-
-    const roomInfo = RocketChatAPI.roomInfoReducer(roomInfoResponse.room);
-
-    const response = await this.get('chat.search', { searchText: searchString, roomId });
-
-    return Array.isArray(response.messages)
-      ? response.messages.map((message) => this.messageSearchResultReducer(message, roomInfo))
-      : [];
-  }
-
-  async searchRooms({ roomIds, searchString }) {
-    const allSearchResultsArrays = await Promise.all(
-      roomIds.map((roomId) => this.searchRoom({ roomId, searchString })),
-    );
-
-    return _.flatten(allSearchResultsArrays);
-  }
-
-  async getRoomInfo({ roomId }) {
-    const response = await this.get('rooms.info', { roomId });
-
-    return response.room;
+  async search({ query, orgs, first = 100 }) {
+    // search against the list of orgs
+    const searchRequests = _.map(orgs, (org) => this.searchReposInOrg({ query, org, first }));
+    const resultSet = await Promise.all(searchRequests);
+    console.log('SEARCH RESULTS', resultSet);
+    const flattenedSet = _.flatten(resultSet);
+    return flattenedSet.map(GithubApi.githubResultsReducer);
   }
 }
 
-module.exports = RocketChatAPI;
+module.exports = GithubApi;

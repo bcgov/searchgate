@@ -1,69 +1,63 @@
-/* eslint-disable no-underscore-dangle */
-const { RESTDataSource } = require('apollo-datasource-rest');
-const _ = require('lodash');
+const { GraphQLDataSource } = require('apollo-datasource-graphql');
+const { gql } = require('apollo-server-express');
 
-class RocketChatAPI extends RESTDataSource {
-  constructor({ baseURL, authToken, userId }) {
+const SEARCH_ROCKETGATE = gql`
+  query Search($query: String!) {
+    search(searchString: $query) {
+            id
+            message
+            url
+            author
+            time
+            roomId
+            room {
+              id
+              name
+            }   
+    }
+  }
+  
+`;
+
+class RocketGateApi extends GraphQLDataSource {
+  constructor({ baseURL }) {
     super();
-
-    this.appURL = baseURL;
-    this.baseURL = `${baseURL}/api/v1/`;
-    this.authToken = authToken;
-    this.userId = userId;
+    this.baseURL = baseURL;
+    this.type = 'rocketgate';
   }
 
-  willSendRequest(request) {
-    request.headers.set('X-Auth-Token', this.authToken);
-    request.headers.set('X-User-Id', this.userId);
+  /**
+     * assembles a github v4 api search query that specifically searches within an organization
+     * @param {String} query
+     * @param {String} org
+     */
+  static queryWithOrg(query, org) {
+    return `${query} org:${org}`;
   }
 
-  messageSearchResultReducer(message, roomInfo) {
+  static rocketChatResultReducer(chatEdge) {
+    const { id } = chatEdge;
     return {
-      id: message._id,
-      message: message.msg,
-      url: `${this.appURL}/channel/${roomInfo.name}?msg=${message._id}`,
-      author: message.u.name,
-      time: message.ts,
-      roomId: roomInfo.id,
-      room: {
-        id: roomInfo.id,
-        name: roomInfo.name,
-      },
+      id,
+      type: 'rocketgate',
+      typePayload: JSON.stringify(chatEdge),
     };
   }
 
-  static roomInfoReducer(room) {
-    return {
-      id: room._id,
-      name: room.name,
-    };
-  }
+  async search({ query }) {
+    try {
+      const response = await this.query(SEARCH_ROCKETGATE, {
+        variables: {
+          query,
+        },
+      });
 
-  async searchRoom({ roomId, searchString }) {
-    const roomInfoResponse = await this.get('rooms.info', { roomId });
-
-    const roomInfo = RocketChatAPI.roomInfoReducer(roomInfoResponse.room);
-
-    const response = await this.get('chat.search', { searchText: searchString, roomId });
-
-    return Array.isArray(response.messages)
-      ? response.messages.map((message) => this.messageSearchResultReducer(message, roomInfo))
-      : [];
-  }
-
-  async searchRooms({ roomIds, searchString }) {
-    const allSearchResultsArrays = await Promise.all(
-      roomIds.map((roomId) => this.searchRoom({ roomId, searchString })),
-    );
-
-    return _.flatten(allSearchResultsArrays);
-  }
-
-  async getRoomInfo({ roomId }) {
-    const response = await this.get('rooms.info', { roomId });
-
-    return response.room;
+      return response.data.search.map(RocketGateApi.rocketChatResultReducer);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }
 
-module.exports = RocketChatAPI;
+module.exports = RocketGateApi;

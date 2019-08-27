@@ -3,29 +3,20 @@ require('dotenv').config({
 });
 
 const { ApolloServer, gql } = require('apollo-server');
-
+const async = require('async');
+const flatten = require('lodash/flatten');
+const userConfig = require('./config/index.json');
+const baseConfig = require('./constants');
 const RocketGateAPI = require('./datasources/rocket.gate');
-// const GitHubAPI = require('./datasources/github');
-
+const GitHubAPI = require('./datasources/github');
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 // @todo should expose a room query, and leverage that *within* the search query
 const typeDefs = gql`      
-    
-
-  type Room {
-    id: String
-    name: String
-  }
-    
   type SearchResult {
     id: String
-    message: String
-    url: String
-    author: String
-    time: String
-    roomId: String
-    room: Room       
+    type: String
+    typePayload: String      
   } 
 
   # The "Query" type is the root of all GraphQL queries.
@@ -34,14 +25,21 @@ const typeDefs = gql`
   }
 `;
 
+const resolveMultipleSearchs = (dataSources, searchString) => {
+  const config = { ...baseConfig, ...userConfig };
+
+  return Object.keys(dataSources).map((source) => {
+    const instance = dataSources[source];
+    const { type } = instance;
+    const configForType = config[type] || {};
+    return instance.search({ query: searchString, ...configForType });
+  });
+};
 // Resolvers define the technique for fetching the types in the
 // schema.
 const resolvers = {
   Query: {
-    search: (_, { searchString }, { dataSources }) => dataSources.rocketGateAPI.searchRooms({
-      roomIds: process.env.ROCKETCHAT_ROOM_IDS.split(','),
-      searchString,
-    }),
+    search: (_, { searchString }, { dataSources }) => Promise.all(resolveMultipleSearchs(dataSources, searchString)).then((res) => flatten(res)),
   },
 
 
@@ -54,10 +52,9 @@ const server = new ApolloServer({
   resolvers,
   dataSources: () => ({
     rocketGateAPI: new RocketGateAPI({
-      baseURL: process.env.ROCKETCHAT_BASE_URL,
-      authToken: process.env.ROCKETCHAT_AUTH_TOKEN,
-      userId: process.env.ROCKETCHAT_USER_ID,
+      baseURL: process.env.ROCKETGATE_BASE_URL,
     }),
+    // githubAPI: new GitHubAPI({ baseURL: process.env.GITHUB_BASE_URL, authToken: process.env.GITHUB_AUTH_TOKEN }),
   }),
 });
 
