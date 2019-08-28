@@ -1,0 +1,22 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: searchgate-credentials-template
+  labels:
+    template: searchgate
+objects:
+- apiVersion: v1
+  data:
+    ROCKETGATE_BASE_URL: ${ROCKETGATE_BASE_URL}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    name: searchgate-config
+    labels:
+      app: searchgate
+parameters:
+- description: Rocketgate API Url to connect apollo to the Rocketgate Service
+  displayName: Rocketgate API URL
+  name: ROCKETGATE_BASE_URL
+  value: https://rocketgate.pathfinder.gov.bc.ca
+  required: true
