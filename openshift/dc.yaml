@@ -77,9 +77,9 @@ objects:
   spec:
     ports:
     - name: web
-      port: 4000
+      port: 4001
       protocol: TCP
-      targetPort: 4000
+      targetPort: 4001
     selector:
       deploymentconfig: ${NAME}${SUFFIX}
 - apiVersion: route.openshift.io/v1
