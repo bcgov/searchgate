@@ -1,7 +1,26 @@
 
 {
+
+  "rocketgate": {
+    "datasource": "_datasources/rocket.gate.js",
+    "method": {
+      "name": "search"
+    },  
+    "constructorArgs": {
+      "baseURL": "env.ROCKETGATE_BASE_URL"
+    }
+  },
   "github": {
-    "orgs": ["bcgov", "bcdevops"],
-    "first": 100
+    "datasource": "_datasources/github.js",
+    "method": {
+      "name": "search",
+      "arguments": {
+        "orgs": ["bcgov", "bcDevOps"],
+        "first": 100
+      }
+    },
+    "constructorArgs": {
+      "authToken": "env.GITHUB_AUTH_TOKEN"
+    }
   }
 }

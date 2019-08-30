@@ -23,15 +23,8 @@ const BASE_DATA_SOURCES = {
 
 const GITHUB_ORGS = ['bcgov', 'bcdevops'];
 
-const DEFAULT_CONFIG = {
-  [BASE_DATA_SOURCES.github]: {
-    orgs: GITHUB_ORGS,
-    first: 100,
-  },
-};
 
 module.exports = {
   BASE_DATA_SOURCES,
-  DEFAULT_CONFIG,
   GITHUB_ORGS,
 };
