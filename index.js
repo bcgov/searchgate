@@ -3,7 +3,6 @@ require('dotenv').config({
 });
 
 const { ApolloServer, gql } = require('apollo-server');
-const async = require('async');
 const flatten = require('lodash/flatten');
 const userConfig = require('./config/index.json');
 const baseConfig = require('./constants');
@@ -30,8 +29,8 @@ const resolveMultipleSearchs = (dataSources, searchString) => {
 
   return Object.keys(dataSources).map((source) => {
     const instance = dataSources[source];
-    const { type } = instance;
-    const configForType = config[type] || {};
+    const { dataSourceType } = instance;
+    const configForType = config[dataSourceType] || {};
     return instance.search({ query: searchString, ...configForType });
   });
 };
@@ -54,7 +53,7 @@ const server = new ApolloServer({
     rocketGateAPI: new RocketGateAPI({
       baseURL: process.env.ROCKETGATE_BASE_URL,
     }),
-    // githubAPI: new GitHubAPI({ baseURL: process.env.GITHUB_BASE_URL, authToken: process.env.GITHUB_AUTH_TOKEN }),
+    githubAPI: new GitHubAPI({ authToken: process.env.GITHUB_AUTH_TOKEN }),
   }),
 });
 
