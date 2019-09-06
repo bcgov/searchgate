@@ -1,5 +1,5 @@
 # OpenShift configuration files
 
-See https://github.com/BCDevOps/openshift-templates
+This directory contains the OpenShift build and deployment artifacts.
 
 # OpenShift Configuration/Setup
