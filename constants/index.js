@@ -18,7 +18,7 @@ Created by Patrick Simonian
 
 const BASE_DATA_SOURCES = {
   github: 'github',
-  rocketgate: 'rocketgate',
+  rocketchat: 'rocketchat',
 };
 
 const GITHUB_ORGS = ['bcgov', 'bcdevops'];

@@ -1,5 +1,6 @@
 const { GraphQLDataSource } = require('apollo-datasource-graphql');
 const { gql } = require('apollo-server-express');
+const { BASE_DATA_SOURCES } = require('../constants');
 
 const SEARCH_ROCKETGATE = gql`
   query Search($query: String!) {
@@ -23,7 +24,7 @@ class RocketGateApi extends GraphQLDataSource {
   constructor({ baseURL }) {
     super();
     this.baseURL = baseURL;
-    this.type = 'rocketchat';
+    this.dataSourceType = BASE_DATA_SOURCES.rocketchat;
   }
 
   /**
@@ -39,7 +40,7 @@ class RocketGateApi extends GraphQLDataSource {
     const { id } = chatEdge;
     return {
       id,
-      type: 'rocketchat',
+      type: BASE_DATA_SOURCES.rocketchat,
       typePayload: JSON.stringify(chatEdge),
     };
   }
