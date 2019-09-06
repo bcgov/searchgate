@@ -23,7 +23,7 @@ class RocketGateApi extends GraphQLDataSource {
   constructor({ baseURL }) {
     super();
     this.baseURL = baseURL;
-    this.type = 'rocketgate';
+    this.type = 'rocketchat';
   }
 
   /**
@@ -39,7 +39,7 @@ class RocketGateApi extends GraphQLDataSource {
     const { id } = chatEdge;
     return {
       id,
-      type: 'rocketgate',
+      type: 'rocketchat',
       typePayload: JSON.stringify(chatEdge),
     };
   }
