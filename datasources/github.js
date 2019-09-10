@@ -106,6 +106,7 @@ class GithubApi {
                 number
                 body
                 url
+                title
                 state
                 repository {
                   name
