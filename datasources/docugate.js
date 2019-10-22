@@ -6,19 +6,25 @@ const SEARCH_DOCUMIZE = gql`
   query Search($query: String!) {
     search(searchString: $query) { 
         id
-        document
+        orgId
+        itemId
         itemType
-        url
+        documentId
+        documentSlug
+        document
+        excerpt
         tags
+        spaceId
+        space
+        spaceSlug
+        template
+        url
+        versionId
         created
         revised
-        space
-        excerpt
     }
   }
-`;// more fileld can be found or be added at
-// https://github.com/bcgov/docugate/blob/525f1ee344408c3d449cbf1ead0d2dbcd499719f/src/index.js#L15
-
+`;
 class DocumizeApi extends GraphQLDataSource {
   constructor({ baseURL }) {
     super();
@@ -35,12 +41,12 @@ class DocumizeApi extends GraphQLDataSource {
     return `${query} org:${org}`;
   }
 
-  static documizeResultReducer(chatEdge) {
-    const { id } = chatEdge;
+  static documizeResultReducer(results) {
+    const { id } = results;
     return {
       id,
       type: BASE_DATA_SOURCES.documize,
-      typePayload: JSON.stringify(chatEdge),
+      typePayload: JSON.stringify(results),
     };
   }
 
