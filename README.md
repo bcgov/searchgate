@@ -1,44 +1,52 @@
-# Application Name
-Description of the application. 
+# Search Gate
+A graphql search federation api
 
 ## Technology Stack Used
 
-## Third-Party Products/Libraries used and the the License they are covert by
+- Apollo
 
 ## Project Status
+Active
 
-## Documentation
-
-GitHub Pages (https://guides.github.com/features/pages/) are a neat way to document you application/project.
-
-## Security
-
-Authentication, Authorization, Policies, etc
-
-## Files in this repository
-
+## Structure
 ```
-docs/           - Project Documentation
-└── images        
-└── icons         
-
-openshift/      - OpenShift-specific files
-├── scripts     - helper scripts
-└── templates   - application templates
+.
+├── config
+├── constants
+├── datasources
+├── docs
+└── openshift
 ```
+## Interacting with the API
 
-## Deployment (Local Development)
+To test this api locally it is beneficial to have a graphql playground which visualizes queries (much better than running inline curl commands. [Graphql Playground](https://github.com/prisma-labs/graphql-playground)
 
-* Developer Workstation Requirements/Setup
-* Application Specific Setup
+
+## Run Locally
+1. git clone project
+2. cd into working directory and run `npm install`
+3. copy env vars `cp .env.example .env` and fill in with appropriate credentials
+4. npm install
+
 
 ## Deployment (OpenShift)
 
-See (openshift/Readme.md)
+This application was built using the [bcdk](https://github.com/bcdevop/bcdk) and the [pipeline cli](https://github.com/bcdevops/pipeline-cli)
 
-## Getting Help or Reporting an Issue
+The application is built using a __PR based workflow__. Every PR kicks off a job in Jenkins that produces a new developer environment that you may subsequently promote into production. 
 
-To report bugs/issues/feature requests, please file an [issue](https://github.com/BCDevOps/opendev-template/issues/).
+To create this pipeline you may take a look at bcdk and more specifically,  the jenkins and jenkins-job script generators. 
+
+To trigger builds or deploys from your machine:
+- ensure your have a PR made in github
+- `cd .pipeline && npm install`
+
+To Build: `npm run build -- --pr=<prNum>`
+
+To Deploy: `npm run deploy -- --pr=<prNum> --env=<dev|test|prod>
+
+If you require clarity on what is actually happening during these npm scripts take a look at the build and deploy files found in `lib`
+
 
 ## How to Contribute
 
