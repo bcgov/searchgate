@@ -32,15 +32,6 @@ class DocumizeApi extends GraphQLDataSource {
     this.dataSourceType = BASE_DATA_SOURCES.documize;
   }
 
-  /**
-     * assembles a github v4 api search query that specifically searches within an organization
-     * @param {String} query
-     * @param {String} org
-     */
-  static queryWithOrg(query, org) {
-    return `${query} org:${org}`;
-  }
-
   static documizeResultReducer(results) {
     const { id } = results;
     return {
