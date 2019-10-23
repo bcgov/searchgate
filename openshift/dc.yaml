@@ -142,4 +142,4 @@ parameters:
   displayName: Documize Base URL
   name: DOCUGATE_BASE_URL
   required: true
-  value: "https://docugate-dev-1-devhub-dev.pathfinder.gov.bc.ca"
+  value: "https://docugate-prod-devhub-prod.pathfinder.gov.bc.ca"
