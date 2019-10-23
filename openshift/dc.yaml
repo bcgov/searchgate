@@ -60,10 +60,10 @@ objects:
                 name: searchgate-credentials
                 key: githubAuthtoken
           - name: DOCUGATE_BASE_URL
-            valueForm:
+            valueFrom:
               configMapKeyRef:
-                name: searchgate-config
                 key: docuGateURL
+                name: searchgate-config
     test: false
     triggers:
     - type: ConfigChange
