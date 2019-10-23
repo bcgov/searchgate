@@ -110,8 +110,8 @@ objects:
   metadata:
       name: searchgate-config
   data:    
-    rocketGateURL: ${ROCKETGATE_BASE_URL}  
     docuGateURL: ${DOCUGATE_BASE_URL}
+    rocketGateURL: ${ROCKETGATE_BASE_URL}  
 parameters:
 - description: A name used for all objects
   displayName: Name
