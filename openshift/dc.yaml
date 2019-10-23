@@ -59,6 +59,11 @@ objects:
               secretKeyRef:
                 name: searchgate-credentials
                 key: githubAuthtoken
+          - name: DOCUGATE_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: docuGateURL
+                name: searchgate-config
     test: false
     triggers:
     - type: ConfigChange
@@ -105,7 +110,8 @@ objects:
   metadata:
       name: searchgate-config
   data:    
-    rocketGateURL: ${ROCKETGATE_BASE_URL}
+    docuGateURL: ${DOCUGATE_BASE_URL}
+    rocketGateURL: ${ROCKETGATE_BASE_URL}  
 parameters:
 - description: A name used for all objects
   displayName: Name
@@ -132,3 +138,8 @@ parameters:
   name: ROCKETGATE_BASE_URL
   required: true
   value: "https://rocketgate.pathfinder.gov.bc.ca"
+- description: Base URL of the Documize instance to be searched
+  displayName: Documize Base URL
+  name: DOCUGATE_BASE_URL
+  required: true
+  value: "https://docugate-prod-devhub-prod.pathfinder.gov.bc.ca"

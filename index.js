@@ -8,6 +8,7 @@ const userConfig = require('./config/index.json');
 const baseConfig = require('./constants');
 const RocketGateAPI = require('./datasources/rocket.gate');
 const GitHubAPI = require('./datasources/github');
+const DocugateAPI = require('./datasources/docugate');
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 // @todo should expose a room query, and leverage that *within* the search query
@@ -54,7 +55,11 @@ const server = new ApolloServer({
       baseURL: process.env.ROCKETGATE_BASE_URL,
     }),
     githubAPI: new GitHubAPI({ authToken: process.env.GITHUB_AUTH_TOKEN }),
+    docugateAPI: new DocugateAPI({
+      baseURL: process.env.DOCUGATE_BASE_URL,
+    }),
   }),
+
 });
 
 // This `listen` method launches a web-server.
