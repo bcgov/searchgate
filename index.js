@@ -39,7 +39,7 @@ const typeDefs = gql`
   
 `;
 
-const resolveMultipleSearches = (dataSources, searchString, dataSourcesToSearch = []) => {
+const resolveMultipleSearches = (dataSources, searchString, dataSourcesToSearch = ['rocketchat', 'documize', 'github']) => {
   const config = { ...baseConfig, ...userConfig };
   console.log(dataSourcesToSearch, dataSources);
   return DATA_SOURCE_NAMES.filter((source) => dataSourcesToSearch.includes(source)).map((source) => {
