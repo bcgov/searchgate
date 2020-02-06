@@ -9,6 +9,18 @@ const baseConfig = require('./constants');
 const RocketGateAPI = require('./datasources/rocket.gate');
 const GitHubAPI = require('./datasources/github');
 const DocugateAPI = require('./datasources/docugate');
+
+const DATA_SOURCES = {
+  rocketchat: new RocketGateAPI({
+    baseURL: process.env.ROCKETGATE_BASE_URL,
+  }),
+  github: new GitHubAPI({ authToken: process.env.GITHUB_AUTH_TOKEN }),
+  documize: new DocugateAPI({
+    baseURL: process.env.DOCUGATE_BASE_URL,
+  }),
+};
+
+const DATA_SOURCE_NAMES = Object.keys(DATA_SOURCES);
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 // @todo should expose a room query, and leverage that *within* the search query
@@ -21,14 +33,16 @@ const typeDefs = gql`
 
   # The "Query" type is the root of all GraphQL queries.
   type Query {    
-    search( searchString: String!): [SearchResult]
+    search( searchString: String!, dataSources: [String]): [SearchResult]
+    dataSources: [String]
   }
+  
 `;
 
-const resolveMultipleSearchs = (dataSources, searchString) => {
+const resolveMultipleSearches = (dataSources, searchString, dataSourcesToSearch = []) => {
   const config = { ...baseConfig, ...userConfig };
-
-  return Object.keys(dataSources).map((source) => {
+  console.log(dataSourcesToSearch, dataSources);
+  return DATA_SOURCE_NAMES.filter((source) => dataSourcesToSearch.includes(source)).map((source) => {
     const instance = dataSources[source];
     const { dataSourceType } = instance;
     const configForType = config[dataSourceType] || {};
@@ -39,7 +53,8 @@ const resolveMultipleSearchs = (dataSources, searchString) => {
 // schema.
 const resolvers = {
   Query: {
-    search: (_, { searchString }, { dataSources }) => Promise.all(resolveMultipleSearchs(dataSources, searchString)).then((res) => flatten(res)),
+    search: (_, { searchString, dataSources: dataSourcesToSearch }, { dataSources }) => Promise.all(resolveMultipleSearches(dataSources, searchString, dataSourcesToSearch)).then((res) => flatten(res)),
+    dataSources: () => Promise.resolve(DATA_SOURCE_NAMES),
   },
 
 
@@ -50,16 +65,7 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  dataSources: () => ({
-    rocketGateAPI: new RocketGateAPI({
-      baseURL: process.env.ROCKETGATE_BASE_URL,
-    }),
-    githubAPI: new GitHubAPI({ authToken: process.env.GITHUB_AUTH_TOKEN }),
-    docugateAPI: new DocugateAPI({
-      baseURL: process.env.DOCUGATE_BASE_URL,
-    }),
-  }),
-
+  dataSources: () => DATA_SOURCES,
 });
 
 // This `listen` method launches a web-server.
