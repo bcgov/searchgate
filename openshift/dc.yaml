@@ -39,13 +39,13 @@ objects:
         - image: ${NAME}:${VERSION}
           name: searchgate
           ports:
-          - containerPort: 4000
+          - containerPort: 4001
             protocol: TCP
           readinessProbe:
             failureThreshold: 3
             httpGet:
               path: /.well-known/apollo/server-health
-              port: 4000
+              port: 4001
               scheme: HTTP
             initialDelaySeconds: 4
             periodSeconds: 10
