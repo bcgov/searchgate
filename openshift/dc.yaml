@@ -41,6 +41,16 @@ objects:
           ports:
           - containerPort: 4000
             protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /.well-known/apollo/server-health
+              port: 4000
+              scheme: HTTP
+            initialDelaySeconds: 4
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 4
           resources:
             requests:
               cpu: '100m'

@@ -56,7 +56,7 @@ class RocketGateApi extends GraphQLDataSource {
       return response.data.search.map(RocketGateApi.rocketChatResultReducer);
     } catch (error) {
       console.error(error);
-      throw error;
+      return [];
     }
   }
 }

@@ -52,7 +52,7 @@ class DocumizeApi extends GraphQLDataSource {
       return response.data.search.map(DocumizeApi.documizeResultReducer);
     } catch (error) {
       console.error(error);
-      throw error;
+      return [];
     }
   }
 }
