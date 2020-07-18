@@ -14,7 +14,7 @@
     "apollo-server-express": "^2.9.0",
     "dotenv": "^8.1.0",
     "graphql": "^14.4.2",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "eslint": "^6.2.2",
